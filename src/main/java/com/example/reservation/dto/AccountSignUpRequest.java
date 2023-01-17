@@ -1,7 +1,13 @@
 package com.example.reservation.dto;
 
 import com.example.reservation.entity.Account;
+import io.jsonwebtoken.Claims;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
+import java.util.Collection;
+import java.util.Collections;
 
 @Getter
 @Setter
@@ -24,6 +30,10 @@ public class AccountSignUpRequest {
         this.usrType = usrType;
     }
 
+    public AccountSignUpRequest(Claims claims) {
+        this.usrId = claims.get("id", String.class);
+    }
+
     public Account toEntity() {
         return Account.builder().
                 usrId(usrId)
@@ -31,6 +41,9 @@ public class AccountSignUpRequest {
                 .usrNm(usrNm)
                 .usrType(usrType)
                 .build();
+    }
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));
     }
 
 }

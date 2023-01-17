@@ -33,13 +33,16 @@
 
 	  var place = [[${place}]];
 	  var id = [[${id}]];
-
+	  var usrId ;
 
 	  document.addEventListener('DOMContentLoaded', function() {
-
+		  selectId();
 		  $.ajax({
 			  url:'/schedules/rmId/'+id,
 			  type:'GET',
+			  beforeSend: function (xhr) {
+				  xhr.setRequestHeader("Authorization","Bearer " + getCookie('token'));
+			  },
 			  success:function(data){
 				  var savedEvents=data;
 				  var transEvents=[];
@@ -292,6 +295,30 @@
 
 	      	 
 	  	});
+	  function getCookie(name) {
+		  let matches = document.cookie.match(new RegExp(
+				  "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+		  ));
+		  return matches ? decodeURIComponent(matches[1]) : undefined;
+	  }
+	  	function selectId(){
+			$.ajax({
+				url: "/select/id",
+				type:"GET",
+				beforeSend: function (xhr) {
+					xhr.setRequestHeader("Authorization","Bearer " + getCookie('token'));
+				},
+				success : function(data) {
+
+					usrId=data.usrId;
+					$("#reservePersonNm").val(data.usrId);
+					$("#reservePerson").val(data.usrId);
+
+				},
+			})
+
+		}
+
 
 	  	function saveSchedule(){
 	  		
@@ -395,7 +422,7 @@
 	      	oEditors.getById["smartEditorEdit"].exec("PASTE_HTML", [arg.event.extendedProps.reserveContent]); //내용밀어넣기
 	      	//oEditors[0].exec("UPDATE_CONTENTS_FIELD", [arg.event.extendedProps.reserveContent]); //내용밀어넣기
 
-			var usrId = [[${session.Account.usrId}]];
+
 	      	updateEvent=arg.event;
 	      	if(arg.event.extendedProps.reservePersonId==usrId){
 	      		var str='';
@@ -462,7 +489,10 @@
       		 $.ajax({
       		        url: "/schedules",
       		        data: param,
-      		        type:"POST",
+      		        type:"POST"
+				 ,beforeSend: function (xhr) {
+					 xhr.setRequestHeader("Authorization","Bearer " + getCookie('token'));
+				 },
       		        success : function(data) {
       		        	if(data=='success'){
 
@@ -483,6 +513,9 @@
       		        url: "/schedules",
       		        data: param,
       		        type:"PUT",
+				    beforeSend: function (xhr) {
+						xhr.setRequestHeader("Authorization","Bearer " + getCookie('token'));
+					},
       		        success : function(data) {
       		        	if(data=='success'){
    		        		calendar.removeAllEvents();
@@ -498,6 +531,9 @@
       		$.ajax({
    		        url: "/schedules/"+param,
    		        type:"DELETE",
+				beforeSend: function (xhr) {
+					xhr.setRequestHeader("Authorization","Bearer " + getCookie('token'));
+				},
    		        success : function(data) {
    		        	if(data=='success'){
    		        		alert("예약을 취소 하였습니다.");
@@ -517,6 +553,9 @@
 			$.ajax({
 				url: '/schedules/rmId/' + id,
 				type: 'GET',
+				beforeSend: function (xhr) {
+					xhr.setRequestHeader("Authorization","Bearer " + getCookie('token'));
+				},
 				success: function (data) {
 					var savedEvents = data;
 					var transEvents = [];
@@ -550,7 +589,7 @@
 				}
 			});
 		}
-      	
+
 	</script>
 </head>
 <meta charset="utf-8">
@@ -623,8 +662,8 @@
 				                        예약자
 				                        </div>
 				                        <div class="col-md-9">
-				                        <input type="text" class="form-control" id="reservePersonNm" name="reservePersonNm" th:value="${session.Account.usrNm}" disabled>
-				                        <input type="hidden" id="reservePerson" name="reservePerson" th:value="${session.Account.usrId}">
+				                        <input type="text" class="form-control" id="reservePersonNm" name="reservePersonNm" disabled>
+				                        <input type="hidden" id="reservePerson" name="reservePerson" >
 				                        </div>
 				                    </div>
 				                    <div class="form-group" style="display:flex;margin-bottom: 5px;">

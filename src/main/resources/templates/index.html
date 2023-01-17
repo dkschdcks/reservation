@@ -85,6 +85,7 @@
 	<script>
 
 		function login(){
+
 				$.ajax({
 					url:'/login',
 					type:'POST',
@@ -93,12 +94,27 @@
 						usrPw:$("#usrPw").val()
 					},
 					success:function(data){
-						location.href="/"+data;
+						//data -> response객체 -> token = data.token
+						document.cookie="token="+data.token;
+						let token=getCookie('token');
+
+						if(token != null){
+							location.href="/map";
+						}
+
 					}
 
 
 				});
 		}
+
+		function getCookie(name) {
+			let matches = document.cookie.match(new RegExp(
+					"(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+			));
+			return matches ? decodeURIComponent(matches[1]) : undefined;
+		}
+
 
 
 	</script>

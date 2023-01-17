@@ -8,7 +8,9 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
@@ -25,12 +27,15 @@ public class LoginController {
             @ApiImplicitParam(name = "usrId", dataType = "string", paramType = "query", value = "유저ID", required = true),
             @ApiImplicitParam(name = "usrPw", dataType = "string", paramType = "query", value = "유저PW", required = true)
     })
-    public String map(@ApiIgnore AccountSignUpRequest req) {
+    public AccountSignUpResponse map(@ApiIgnore AccountSignUpRequest req) {
         AccountSignUpResponse res = ls.login(req);
-        if (res != null) {
-            return "map";
-        }
-        return "index";
+        return res;
+    }
+    @GetMapping("/select/id")
+    public AccountSignUpResponse selectId(@AuthenticationPrincipal AccountSignUpRequest req) {
+        AccountSignUpResponse res =new AccountSignUpResponse();
+        res.setUsrId(req.getUsrId());
+        return res;
     }
 
     @Autowired

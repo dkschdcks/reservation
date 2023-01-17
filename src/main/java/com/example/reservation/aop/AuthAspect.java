@@ -14,21 +14,6 @@ import javax.servlet.http.HttpSession;
 @Component
 @Aspect
 public class AuthAspect {
-    @Pointcut(" execution(* com.example.reservation.controller.*.*(..))")
-    public void cut() {
-    }
-
-    @Around("cut()")
-    public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
-
-        HttpSession session = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest().getSession();
-
-        if (session.getAttribute("Account") == null) { //로그인을 했을때
-            return null;
-        } else {// 로그인을 안했을때
-            return joinPoint.proceed();
-        }
-    }
 
 
 }
